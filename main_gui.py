@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from time import *
 
 pantalla_principal = Tk()
 pantalla_principal.title("Sistema institucional de votacion estudiantil")
@@ -16,6 +17,7 @@ title = Label(pantalla_principal, text="SIVES", font=("Cascadia Code SemiBold", 
 title.place(x=150, y=50)
 
 global identificador
+global selected_party
 
 global pantalla_datos_del_votante
 #funciones
@@ -52,8 +54,18 @@ def devolver_a_pantalla_principal():
         pantalla_conteo_de_votos.withdraw()
         pantalla_principal.deiconify()
 
+    elif identificador == 4:
+        # You can add your code here for what to do when returning from the "Conteo de votos" screen.
+        pantalla_zona_de_votacion.withdraw()
+        pantalla_principal.deiconify()
+    elif identificador == 5:
+        # You can add your code here for what to do when returning from the "Conteo de votos" screen.
+        pantalla_gracias_por_votar.withdraw()
+        pantalla_principal.deiconify()
+
 #create a function that saves the name and cedula of the voter in a file
 def save_data():
+    zona_de_votacion()
     name = entry_nombre_temporal.get()
     cedula = entry_cedula_temporal.get()
     with open("voters.txt", "a") as f:
@@ -61,8 +73,110 @@ def save_data():
     entry_nombre_temporal.set("")
     entry_cedula_temporal.set("")
 
+
+#the function guardar voto is gonna get whatever checkbox the user selected and save it in a file, then show a new toplabel that says "gracias por votar" and then goes back to the main screen
+def guardar_voto():
+    global selected_party
+    if selected_party.get() == 1:
+        with open("votos.txt", "a") as f:
+            f.write("Partido 1\n")
+    elif selected_party.get() == 2:
+        with open("votos.txt", "a") as f:
+            f.write("Partido 2\n")
+    elif selected_party.get() == 3:
+        with open("votos.txt", "a") as f:
+            f.write("Partido 3\n")
+    elif selected_party.get() == 4:
+        with open("votos.txt", "a") as f:
+            f.write("Partido 4\n")
+    elif selected_party.get() == 5:
+        with open("votos.txt", "a") as f:
+            f.write("Voto nulo\n")
+
+    pantalla_zona_de_votacion.withdraw()
+    global pantalla_gracias_por_votar
+    global identificador
+    identificador = 5
+    pantalla_gracias_por_votar = Toplevel()
+    pantalla_gracias_por_votar.title("Gracias por votar")
+    pantalla_gracias_por_votar.geometry("500x720")
+    pantalla_gracias_por_votar.resizable(False, False)
+    pantalla_gracias_por_votar.config(bg="#F4E9CD")
+
+    #labels
+    label_gracias_por_votar = Label(pantalla_gracias_por_votar, text="Gracias por votar", font=("Cascadia Code SemiBold", 25), bg="#F4E9CD")
+    label_gracias_por_votar.place(x=90, y=50)
+
+    #buttons
+    devolver = ttk.Button(pantalla_gracias_por_votar, text="Devolver", command=devolver_a_pantalla_principal)
+    devolver.place(x=90, y=600)
+
     
 
+
+
+
+
+def zona_de_votacion():
+    global identificador
+    global selected_party
+    selected_party = IntVar()
+    identificador = 4
+    pantalla_datos_del_votante.withdraw()
+    global pantalla_zona_de_votacion
+    pantalla_zona_de_votacion = Toplevel()
+    pantalla_zona_de_votacion.title("Zona de votacion")
+    pantalla_zona_de_votacion.geometry("1280x720")
+    pantalla_zona_de_votacion.resizable(False, False)
+    pantalla_zona_de_votacion.config(bg="#F4E9CD")
+
+    #labels
+    zona_de_votacion_label = Label(pantalla_zona_de_votacion, text="Zona de votacion", font=("Cascadia Code SemiBold", 25), bg="#F4E9CD")
+    zona_de_votacion_label.place(x=520, y=50)
+    zona_de_votacion_partido_1 = Label(pantalla_zona_de_votacion, text="Partido 1", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    zona_de_votacion_partido_1.place(x=100, y=200)
+    zona_de_votacion_partido_2 = Label(pantalla_zona_de_votacion, text="Partido 2", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    zona_de_votacion_partido_2.place(x=400, y=200)
+    zona_de_votacion_partido_3 = Label(pantalla_zona_de_votacion, text="Partido 3", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    zona_de_votacion_partido_3.place(x=700, y=200)
+    zona_de_votacion_partido_4 = Label(pantalla_zona_de_votacion, text="Partido 4", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    zona_de_votacion_partido_4.place(x=1000, y=200)
+    zona_de_votacion_nulo = Label(pantalla_zona_de_votacion, text="Voto nulo", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    zona_de_votacion_nulo.place(x=100, y=400)
+
+    #checkboxes
+    def get_selected_party():
+        
+        if selected_party.get() == 1:
+            print("Se seleccionó el partido 1")
+        elif selected_party.get() == 2:
+            print("Se seleccionó el partido 2")
+        elif selected_party.get() == 3:
+            print("Se seleccionó el partido 3")
+        elif selected_party.get() == 4:
+            print("Se seleccionó el partido 4")
+        elif selected_party.get() == 5:
+            print("Se seleccionó el voto nulo")
+    style = ttk.Style()
+    style.configure('TCheckbutton', font=("Cascadia Code SemiBold", 0), background="#F4E9CD", foreground="#F4E9CD", width=0, height=0,)
+    selected_party = IntVar()
+    checkbox_partido_1 = ttk.Checkbutton(pantalla_zona_de_votacion, variable=selected_party, onvalue=1, offvalue=0, command=get_selected_party,)
+    checkbox_partido_1.place(x=135, y=250)
+    checkbox_partido_2 = ttk.Checkbutton(pantalla_zona_de_votacion, variable=selected_party, onvalue=2, offvalue=0, command=get_selected_party)
+    checkbox_partido_2.place(x=435, y=250)
+    checkbox_partido_3 = ttk.Checkbutton(pantalla_zona_de_votacion, variable=selected_party, onvalue=3, offvalue=0, command=get_selected_party)
+    checkbox_partido_3.place(x=735, y=250)
+    checkbox_partido_4 = ttk.Checkbutton(pantalla_zona_de_votacion, variable=selected_party, onvalue=4, offvalue=0, command=get_selected_party)
+    checkbox_partido_4.place(x=1035, y=250)
+    checkbox_nulo = ttk.Checkbutton(pantalla_zona_de_votacion, variable=selected_party, onvalue=5, offvalue=0, command=get_selected_party)
+    checkbox_nulo.place(x=135, y=450)
+
+    #buttons
+    devolver = ttk.Button(pantalla_zona_de_votacion, text="Devolver", command=devolver_a_pantalla_principal)
+    devolver.place(x=90, y=600)
+    enviar_voto = ttk.Button(pantalla_zona_de_votacion, text="Enviar voto", command=guardar_voto)
+    enviar_voto.place(x=90, y=500)
+    
 
 def datos_del_votante():
     global identificador
@@ -108,7 +222,7 @@ def datos_del_votante():
     # buttons
     devolver = ttk.Button(pantalla_datos_del_votante, text="Devolver", command=devolver_a_pantalla_principal)
     devolver.place(x=90, y=600)
-    enviar = ttk.Button(pantalla_datos_del_votante, text="Enviar", command=save_data)
+    enviar = ttk.Button(pantalla_datos_del_votante, text="Enviar", command=save_data,)
     enviar.place(x=90, y=500)
 
 
@@ -149,8 +263,35 @@ def creditos():
     devolver = ttk.Button(pantalla_creditos, text="Devolver", command=devolver_a_pantalla_principal)
     devolver.place(x=130, y=600)
 
+#esta funcion va a contar los votos en el archivo votos.txt, y luego mostrarlo en la pantalla de conteo de votos
+def contador_de_votos():
+    for i in range(1, 5):
+        with open("votos.txt", "r") as f:
+            votos = f.read()
+            votos_partido_1 = votos.count("Partido 1")
+            votos_partido_2 = votos.count("Partido 2")
+            votos_partido_3 = votos.count("Partido 3")
+            votos_partido_4 = votos.count("Partido 4")
+            votos_nulos = votos.count("Voto nulo")
+
+    #labels
+    label_conteo_de_votos = Label(pantalla_conteo_de_votos, text="Conteo de votos", font=("Cascadia Code SemiBold", 25), bg="#F4E9CD")
+    label_conteo_de_votos.place(x=100, y=25)
+    botos_partido_1 = Label(pantalla_conteo_de_votos, text=f"Partido 1: {votos_partido_1}", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    botos_partido_1.place(x=100, y=100)
+    botos_partido_2 = Label(pantalla_conteo_de_votos, text=f"Partido 2: {votos_partido_2}", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    botos_partido_2.place(x=100, y=200)
+    botos_partido_3 = Label(pantalla_conteo_de_votos, text=f"Partido 3: {votos_partido_3}", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    botos_partido_3.place(x=100, y=300)
+    botos_partido_4 = Label(pantalla_conteo_de_votos, text=f"Partido 4: {votos_partido_4}", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    botos_partido_4.place(x=100, y=400)
+    botos_nulos = Label(pantalla_conteo_de_votos, text=f"Votos nulos: {votos_nulos}", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+    botos_nulos.place(x=100, y=500)
+
+
+
 def validation():
-    if entry_usuario_temporal.get() == "admin" and entry_contraseña_temporal.get() == "papaya":
+    if entry_usuario_temporal.get() == "admin" and entry_contraseña_temporal.get() == "admin":
         global identificador
         global pantalla_conteo_de_votos
     
@@ -163,13 +304,15 @@ def validation():
         pantalla_conteo_de_votos.config(bg="#F4E9CD")
         #labels
         label_conteo_de_votos = Label(pantalla_conteo_de_votos, text="Conteo de votos", font=("Cascadia Code SemiBold", 25), bg="#F4E9CD")
-        label_conteo_de_votos.place(x=100, y=50)
+        label_conteo_de_votos.place(x=100, y=25)
         botos_partido_1 = Label(pantalla_conteo_de_votos, text="Partido 1:", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
-        botos_partido_1.place(x=100, y=200)
+        botos_partido_1.place(x=100, y=100)
         botos_partido_2 = Label(pantalla_conteo_de_votos, text="Partido 2:", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
-        botos_partido_2.place(x=100, y=300)
+        botos_partido_2.place(x=100, y=200)
         botos_partido_3 = Label(pantalla_conteo_de_votos, text="Partido 3:", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
-        botos_partido_3.place(x=100, y=400)
+        botos_partido_3.place(x=100, y=300)
+        botos_partido_4 = Label(pantalla_conteo_de_votos, text="Partido 4:", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
+        botos_partido_4.place(x=100, y=400)
         botos_nulos = Label(pantalla_conteo_de_votos, text="Votos nulos:", font=("Cascadia Code SemiBold", 20), bg="#F4E9CD")
         botos_nulos.place(x=100, y=500)
 
@@ -178,7 +321,9 @@ def validation():
 
         #buttons
         devolver = ttk.Button(pantalla_conteo_de_votos, text="Devolver", command=devolver_a_pantalla_principal)
-        devolver.place(x=90, y=600)
+        devolver.place(x=90, y=580)
+        contar_votos = ttk.Button(pantalla_conteo_de_votos, text="Contar votos", command=contador_de_votos)
+        contar_votos.place(x=90, y=650)
 
 
 
